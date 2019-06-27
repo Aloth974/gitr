@@ -1,0 +1,14 @@
+#!/bin/bash
+
+DIR=$(dirname $(readlink -f $0))
+NODENAME="node"
+NODE=$(which $NODENAME)
+
+command -v $NODENAME >/dev/null 2>&1
+
+if [ "$?" -ne "0" ] ; then
+	echo "Impossible de trouver nodejs"
+	exit -1
+fi
+
+$NODE $DIR/gitr.js $*
