@@ -403,7 +403,7 @@ display_handlers["pull"] = function(data) {
 
 /* Find all .git directories to know all projects */
 
-var FIND_COMMAND = 'find . -name ".git" -type d';
+var FIND_COMMAND = 'find . -name ".git" -type d -maxdepth 5';
 
 Loader.start();
 
