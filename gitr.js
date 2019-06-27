@@ -192,13 +192,38 @@ var Loader = (function() {
 
 display_handlers["status"] = function(data) {
 
+	var getModuleInformations = function(output) {
+		var module_data = output.stdout.split("\n").filter(function(a) { return a.length > 0 && a[0] != " "; });
+		//var module_data = data[k].split("\n");
+		var upToDate =
+			(typeof module_data[1] != "undefined" && module_data[1].indexOf("à jour") > -1) ||
+			(typeof module_data[2] != "undefined" && module_data[2].indexOf("à jour") > -1)
+		;
+		var late = 0;
+		if(!upToDate) {
+			late = parseInt(module_data[1]);
+		}
+		return {
+			branch: module_data[0].split(" ").pop(),
+			upToDate: upToDate,
+			late: late,
+			clear:
+				(typeof module_data[1] != "undefined" && module_data[1].indexOf("propre") > -1) ||
+				(typeof module_data[2] != "undefined" && module_data[2].indexOf("propre") > -1)
+		};
+	};
+
 	/* compute sizes */
 
 	var totalSize = 13;
 	var sizes = [ 0, 16, 6, 6 ];
 	for(var k in data) {
+		var infos = getModuleInformations(data[k]);
 		if(k.length > sizes[0]) {
 			sizes[0] = k.length;
+		}
+		if(infos.branch.length > sizes[1]) {
+			sizes[1] = infos.branch.length;
 		}
 	}
 	for(var k in sizes) {
@@ -227,26 +252,6 @@ display_handlers["status"] = function(data) {
 			color(upToDate, sizes[2]),
 			color(clean, sizes[3])
 		));
-	};
-	var getModuleInformations = function(output) {
-		var module_data = output.stdout.split("\n").filter(function(a) { return a.length > 0 && a[0] != " "; });
-		//var module_data = data[k].split("\n");
-		var upToDate =
-			(typeof module_data[1] != "undefined" && module_data[1].indexOf("à jour") > -1) ||
-			(typeof module_data[2] != "undefined" && module_data[2].indexOf("à jour") > -1)
-		;
-		var late = 0;
-		if(!upToDate) {
-			late = parseInt(module_data[1]);
-		}
-		return {
-			branch: module_data[0].split(" ").pop(),
-			upToDate: upToDate,
-			late: late,
-			clear:
-				(typeof module_data[1] != "undefined" && module_data[1].indexOf("propre") > -1) ||
-				(typeof module_data[2] != "undefined" && module_data[2].indexOf("propre") > -1)
-		};
 	};
 
 	console.log("-".repeat(totalSize));
